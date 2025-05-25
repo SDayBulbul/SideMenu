@@ -56,7 +56,7 @@ public extension SideMenuPresentationStyle {
     /// Menu slides in over the existing view.
     static var menuSlideIn: SideMenuPresentationStyle {
         return SideMenuPresentationStyle {
-            $0.menuOnTop = true
+//            $0.menuOnTop = true
             $0.menuTranslateFactor = -1
         }
     }

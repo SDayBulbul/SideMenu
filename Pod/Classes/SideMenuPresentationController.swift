@@ -260,7 +260,7 @@ private extension SideMenuPresentationController {
             else { return }
 
         statusBarView?.layer.zPosition = 2
-
+        /*
         if config.presentationStyle.menuOnTop {
             addShadow(to: presentedViewController.view)
             presentedViewController.view.layer.zPosition = 1
@@ -268,6 +268,7 @@ private extension SideMenuPresentationController {
             addShadow(to: presentingViewController.view)
             presentedViewController.view.layer.zPosition = -1
         }
+        */
     }
 
     func addShadow(to view: UIView) {
