@@ -110,7 +110,10 @@ internal extension UIPanGestureRecognizer {
 
 internal extension UIApplication {
 
-    var keyWindow: UIWindow? {
-        return UIApplication.shared.windows.filter { $0.isKeyWindow }.first
+    var activeKeyWindow: UIWindow? {
+        return connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
     }
 }

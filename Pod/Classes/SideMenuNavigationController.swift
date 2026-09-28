@@ -89,7 +89,7 @@ public struct SideMenuSettings: Model, InitializableStruct {
     public var enableTapToDismissGesture: Bool = true
     public var initialSpringVelocity: CGFloat = 1
     public var menuWidth: CGFloat = {
-        let appScreenRect = UIApplication.shared.keyWindow?.bounds ?? UIWindow().bounds
+        let appScreenRect = UIApplication.shared.activeKeyWindow?.bounds ?? UIWindow().bounds
         let minimumSize = min(appScreenRect.width, appScreenRect.height)
         return min(round(minimumSize * 0.75), 240)
     }()
@@ -121,7 +121,6 @@ open class SideMenuNavigationController: UINavigationController {
     private weak var _sideMenuManager: SideMenuManager?
     private weak var foundViewController: UIViewController?
     private var originalBackgroundColor: UIColor?
-    private var rotating: Bool = false
     private var transitionController: SideMenuTransitionController?
     private var transitionInteractive: Bool = false
 
@@ -267,8 +266,6 @@ open class SideMenuNavigationController: UINavigationController {
         // Don't bother resizing if the view isn't visible
         guard let transitionController = transitionController, !view.isHidden else { return }
 
-        rotating = true
-        
         let dismiss = self.presentingViewControllerUseSnapshot || self.dismissOnRotation
         coordinator.animate(alongsideTransition: { _ in
             if dismiss {
@@ -281,7 +278,6 @@ open class SideMenuNavigationController: UINavigationController {
             if dismiss {
                 self.dismissMenu(animated: false)
             }
-            self.rotating = false
         }
     }
 
@@ -542,9 +538,6 @@ private extension SideMenuNavigationController {
         modalPresentationStyle = .overFullScreen
 
         setupBlur()
-        if #available(iOS 13.0, *) {} else {
-            registerForNotifications()
-        }
     }
 
     func setupBlur() {
@@ -587,34 +580,6 @@ private extension SideMenuNavigationController {
             tableViewController.tableView.reloadData()
         } else if let blurView = view.subviews.first as? UIVisualEffectView {
             blurView.removeFromSuperview()
-        }
-    }
-
-    @available(iOS, deprecated: 13.0)
-    func registerForNotifications() {
-        NotificationCenter.default.removeObserver(self)
-
-        [UIApplication.willChangeStatusBarFrameNotification,
-         UIApplication.didEnterBackgroundNotification].forEach {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: $0, object: nil)
-        }
-    }
-
-    @available(iOS, deprecated: 13.0)
-    @objc func handleNotification(notification: NSNotification) {
-        guard isHidden else { return }
-
-        switch notification.name {
-        case UIApplication.willChangeStatusBarFrameNotification:
-            // Dismiss for in-call status bar changes but not rotation
-            if !rotating {
-                dismissMenu()
-            }
-        case UIApplication.didEnterBackgroundNotification:
-            if dismissWhenBackgrounded {
-                dismissMenu()
-            }
-        default: break
         }
     }
 

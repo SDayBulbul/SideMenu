@@ -215,7 +215,7 @@ private extension SideMenuManager {
     }
 
     var topMostViewController: UIViewController? {
-        return UIApplication.shared.keyWindow?.rootViewController?.topMostViewController
+        return UIApplication.shared.activeKeyWindow?.rootViewController?.topMostViewController
     }
 }
 
